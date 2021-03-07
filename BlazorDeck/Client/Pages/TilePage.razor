@@ -1,0 +1,12 @@
+﻿@using BlazorDeck.Shared.ComponentModels
+
+@foreach (var tile in definition.Tiles.OrderBy((tile) => tile.Priority))
+{
+    <Tile definition="tile"></Tile>
+}
+
+@code {
+    [Parameter]
+    public TilePageDefinition definition { get; set; }
+
+}

@@ -1,0 +1,17 @@
+﻿@using Client.Services
+@inject ActionRouter actionRouter;
+
+<Radzen.Blazor.RadzenButton Text=@definition.Name Click=@Click>
+
+</Radzen.Blazor.RadzenButton>
+
+@using BlazorDeck.Shared.ComponentModels
+@code {
+    [Parameter]
+    public TileDefinition definition { get; set; }
+
+    public void Click()
+    {
+        actionRouter.RunAction(definition.Action);
+    }
+}

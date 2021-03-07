@@ -1,0 +1,51 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ServerEventManager serverEventHandler
+@using BlazorDeck.Shared.ComponentModels
+@using Newtonsoft.Json;
+@using BlazorDeck.Client.Services.ServerEventHandlers;
+@*<Tile definition="@tileDefinition"></Tile>*@
+@if (tilePageDefinitions != null)
+{
+    <TilePage definition=@activeTilePage></TilePage>
+}
+
+@code{
+    public IEnumerable<TilePageDefinition> tilePageDefinitions { get; private set; }
+    public TilePageDefinition activeTilePage { get; private set; }
+    public TileDefinition tileDefinition { get; private set; }
+    private TilePageDefinition defaultPage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var results = await Http.GetAsync("api/TileConfig").ConfigureAwait(true);
+        var tilepageJson = await results.Content.ReadAsStringAsync().ConfigureAwait(true);
+        tilePageDefinitions = JsonConvert.DeserializeObject<IEnumerable<TilePageDefinition>>(tilepageJson, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+        foreach(var tilePageDefinition in tilePageDefinitions)
+        {
+            if (tilePageDefinition.DefaultPage)
+            {
+                defaultPage = tilePageDefinition;
+            }
+
+            tilePageDefinition.NavEvent.EventActive += (sender, args) => SetActivePage(tilePageDefinition);
+            tilePageDefinition.NavEvent.EventInactive += (sender, arg) => SetDefaultPage();
+        }
+        SetDefaultPage();
+        await serverEventHandler.Start(tilePageDefinitions.Select((tilePageDefinition) => tilePageDefinition.NavEvent));
+        StateHasChanged();
+    }
+
+    private void SetActivePage(TilePageDefinition tilePageDefinition)
+    {
+        activeTilePage = tilePageDefinition;
+        StateHasChanged();
+    }
+
+    private void SetDefaultPage()
+    {
+        activeTilePage = defaultPage ?? tilePageDefinitions.First();
+        StateHasChanged();
+    }
+}
