@@ -1,0 +1,44 @@
+﻿@using BlazorDeck.Shared.ComponentModels.Displays;
+@using BlazorComponentUtilities;
+
+<div style="@Style">
+    <img style="@ImageStyle" src="@source"/>
+</div>
+
+@code {
+    [Parameter]
+    public SvgTileDisplayDefinition definition { get; set; }
+    public string Style { get; set; }
+    public string ImageStyle { get; set; }
+    public string source { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetStyles();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetStyles();
+        base.OnParametersSet();
+    }
+
+    private void SetStyles()
+    {
+        Style = new CssBuilder()
+            .AddValue($"background-color: {definition.BackgroundColor};")
+            .AddValue($"color: {definition.IconColor};")
+            .AddValue("text-align: center;")
+            .AddValue("height: 100%;")
+            .AddValue("width: 100%;")
+            .AddValue("display: flex;")
+            .AddValue("justify-content: center;")
+            .AddValue("align-items: center;")
+            .Build();
+        ImageStyle = new CssBuilder()
+            .AddValue($"max-width: 80%;")
+            .AddValue($"max-height: 80%;")
+            .Build();
+        source = "images/" + definition.SvgPath;
+    }
+}

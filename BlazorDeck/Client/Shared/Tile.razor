@@ -1,16 +1,28 @@
-﻿@using Client.Services
+﻿@using Client.Services;
+@using BlazorDeck.Shared.ComponentModels.Displays;
 @inject ActionRouter actionRouter;
 
-<Radzen.Blazor.RadzenButton Text=@definition.Name Click=@Click>
-
-</Radzen.Blazor.RadzenButton>
+<div class="tile" @onclick="Click">
+    @if (definition.Display is TextTileDisplayDefinition textTileDisplayDefinition)
+    {
+        <BlazorDeck.Client.Shared.TileDisplays.TextTileDisplay definition="textTileDisplayDefinition" />
+    }
+    @if (definition.Display is IconTileDisplayDefinition iconTileDisplayDefinition)
+    {
+        <BlazorDeck.Client.Shared.TileDisplays.IconTileDisplay definition="iconTileDisplayDefinition" />
+    }
+    @if (definition.Display is SvgTileDisplayDefinition svgTileDisplayDefinition)
+    {
+        <BlazorDeck.Client.Shared.TileDisplays.SvgTileDisplay definition="svgTileDisplayDefinition" />
+    }
+</div>
 
 @using BlazorDeck.Shared.ComponentModels
 @code {
     [Parameter]
     public TileDefinition definition { get; set; }
 
-    public void Click()
+    private void Click()
     {
         actionRouter.RunAction(definition.Action);
     }

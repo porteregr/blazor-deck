@@ -1,9 +1,10 @@
 ﻿@using BlazorDeck.Shared.ComponentModels
-
-@foreach (var tile in definition.Tiles.OrderBy((tile) => tile.Priority))
-{
-    <Tile definition="tile"></Tile>
-}
+<div class="tile-container" >
+    @foreach (var tile in definition.Tiles.OrderBy((tile) => tile.Priority))
+    {
+        <Tile definition="tile"></Tile>
+    }
+</div>
 
 @code {
     [Parameter]
