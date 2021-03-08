@@ -18,6 +18,7 @@ namespace BlazorDeck.Client
             builder.Services.AddScoped<Services.ActionRunners.APIActionRunner>();
             builder.Services.AddScoped<Services.ServerEventHandlers.ServerEventManager>();
             builder.Services.AddScoped<Services.ServerEventHandlers.ActiveWindowEventHandler>();
+            builder.Services.AddScoped<Services.ActionRunners.NavActionRunner>();
             builder.Services.AddTransient<Services.BlazorTimer>();
 
 

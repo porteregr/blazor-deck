@@ -1,0 +1,33 @@
+﻿@using BlazorDeck.Shared.ComponentModels.Displays;
+@using BlazorComponentUtilities;
+
+<div style="@Style">
+    <i class="@IconClasses"></i>
+</div>
+
+@code {
+    [Parameter]
+    public IconTileDisplayDefinition definition { get; set; }
+    public string Style { get; set; }
+    public string IconClasses { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Style = new CssBuilder()
+            .AddValue($"background-color: {definition.BackgroundColor};")
+            .AddValue($"color: {definition.IconColor};")
+            .AddValue("text-align: center;")
+            .AddValue("height: 100%;")
+            .AddValue("width: 100%;")
+            .AddValue("display: flex;")
+            .AddValue("justify-content: center;")
+            .AddValue("align-items: center;")
+            .AddValue("font-size:64px")
+            .Build();
+
+        IconClasses = new CssBuilder()
+            .AddClass("fas")
+            .AddClass(definition.Icon)
+            .Build();
+    }
+}

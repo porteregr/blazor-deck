@@ -35,6 +35,7 @@ namespace BlazorDeck.Server
             services.AddSingleton<KeyEmulation>();
             services.AddSingleton<TileConfigManager>();
             services.AddSingleton<ServerEventManager>();
+            services.AddSingleton<ProgramRunManager>();
             services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

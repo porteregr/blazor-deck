@@ -1,0 +1,26 @@
+﻿@using BlazorDeck.Shared.ComponentModels.Displays;
+@using BlazorComponentUtilities;
+
+<div style="@Style">
+    <h3>@definition.Text</h3>
+</div>
+
+@code {
+    [Parameter]
+    public TextTileDisplayDefinition definition { get; set; }
+    public string Style { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Style = new CssBuilder()
+        .AddValue($"background-color: {definition.BackgroundColor};")
+        .AddValue($"color: {definition.TextColor};")
+        .AddValue("text-align: center;")
+        .AddValue("height: 100%;")
+        .AddValue("width: 100%;")
+        .AddValue("display: flex;")
+        .AddValue("justify-content: center;")
+        .AddValue("align-items: center;")
+        .Build();
+    }
+}
