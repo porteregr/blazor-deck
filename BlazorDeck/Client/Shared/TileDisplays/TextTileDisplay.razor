@@ -12,15 +12,26 @@
 
     protected override void OnInitialized()
     {
+        SetStyles();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetStyles();
+        base.OnParametersSet();
+    }
+
+    private void SetStyles()
+    {
         Style = new CssBuilder()
-        .AddValue($"background-color: {definition.BackgroundColor};")
-        .AddValue($"color: {definition.TextColor};")
-        .AddValue("text-align: center;")
-        .AddValue("height: 100%;")
-        .AddValue("width: 100%;")
-        .AddValue("display: flex;")
-        .AddValue("justify-content: center;")
-        .AddValue("align-items: center;")
-        .Build();
+            .AddValue($"background-color: {definition.BackgroundColor};")
+            .AddValue($"color: {definition.TextColor};")
+            .AddValue("text-align: center;")
+            .AddValue("height: 100%;")
+            .AddValue("width: 100%;")
+            .AddValue("display: flex;")
+            .AddValue("justify-content: center;")
+            .AddValue("align-items: center;")
+            .Build();
     }
 }

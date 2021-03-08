@@ -13,6 +13,17 @@
 
     protected override void OnInitialized()
     {
+        SetStyles();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetStyles();
+        base.OnParametersSet();
+    }
+
+    private void SetStyles()
+    {
         Style = new CssBuilder()
             .AddValue($"background-color: {definition.BackgroundColor};")
             .AddValue($"color: {definition.IconColor};")
