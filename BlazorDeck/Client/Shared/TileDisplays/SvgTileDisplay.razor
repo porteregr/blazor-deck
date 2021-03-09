@@ -1,15 +1,17 @@
 ﻿@using BlazorDeck.Shared.ComponentModels.Displays;
 @using BlazorComponentUtilities;
 
-<div style="@Style">
-    <img style="@ImageStyle" src="@source"/>
-</div>
+<ColoredTileDisplay Color="@definition.BackgroundColor" style="@TextStyle">
+    <LabeledTileDisplay Label="@definition.Label">
+        <img style="@ImageStyle" src="@source" />
+    </LabeledTileDisplay>
+</ColoredTileDisplay>
 
 @code {
     [Parameter]
     public SvgTileDisplayDefinition definition { get; set; }
-    public string Style { get; set; }
     public string ImageStyle { get; set; }
+    public string TextStyle { get; set; }
     public string source { get; set; }
 
     protected override void OnInitialized()
@@ -25,20 +27,23 @@
 
     private void SetStyles()
     {
-        Style = new CssBuilder()
-            .AddValue($"background-color: {definition.BackgroundColor};")
-            .AddValue($"color: {definition.IconColor};")
-            .AddValue("text-align: center;")
-            .AddValue("height: 100%;")
-            .AddValue("width: 100%;")
-            .AddValue("display: flex;")
-            .AddValue("justify-content: center;")
-            .AddValue("align-items: center;")
+        TextStyle = new CssBuilder()
+            .AddValue($"color: {definition.LabelColor};")
             .Build();
-        ImageStyle = new CssBuilder()
-            .AddValue($"max-width: 80%;")
-            .AddValue($"max-height: 80%;")
-            .Build();
+
+        var imageStyleBuilder = new CssBuilder()
+            .AddValue("object-fit: contain;")
+            .AddValue("flex:0;")
+            .AddValue("align-self:center;");
+
+        if (!string.IsNullOrEmpty(definition.Label))
+        {
+            imageStyleBuilder.AddValue("max-width: 60%;")
+                .AddValue("max-height: 60%;");
+        }
+
+        ImageStyle = imageStyleBuilder.Build();
+
         source = "images/" + definition.SvgPath;
     }
 }

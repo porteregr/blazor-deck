@@ -1,0 +1,13 @@
+﻿@ChildContent
+@if (!string.IsNullOrEmpty(Label)){ 
+<div style="flex:0;font-size:100%">
+    <h4>@Label</h4>
+</div>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public String Label { get; set; }
+}

@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BlazorDeck.Shared.ComponentModels.Displays
+﻿namespace BlazorDeck.Shared.ComponentModels.Displays
 {
-    public class SvgTileDisplayDefinition: ITileDisplay
+    public class SvgTileDisplayDefinition: ColoredLabeledTileDisplayDefinition
     {
         public string SvgPath { get; private set; }
-        public string BackgroundColor { get; private set; }
-        public string IconColor { get; private set; }
-        public SvgTileDisplayDefinition(string svgPath, string backgroundColor, string iconColor)
+
+        public SvgTileDisplayDefinition(string svgPath, string backgroundColor, string label = null, string labelColor = "#FFFFFF"):base(label, labelColor, backgroundColor)
         {
             SvgPath = svgPath;
-            BackgroundColor = backgroundColor;
-            IconColor = iconColor;
         }
     }
 }

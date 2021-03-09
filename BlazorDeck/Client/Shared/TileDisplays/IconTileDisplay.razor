@@ -1,16 +1,17 @@
 ﻿@using BlazorDeck.Shared.ComponentModels.Displays;
 @using BlazorComponentUtilities;
 
-<div style="@Style">
-    <i class="@IconClasses"></i>
-</div>
+<ColoredTileDisplay Color="@definition.BackgroundColor" style="@Style">
+    <LabeledTileDisplay Label="@definition.Label">
+        <i style="flex:0; align-self:center;" class="@IconClasses"></i>
+    </LabeledTileDisplay>
+</ColoredTileDisplay>
 
 @code {
     [Parameter]
     public IconTileDisplayDefinition definition { get; set; }
-    public string Style { get; set; }
     public string IconClasses { get; set; }
-
+    public string Style { get; set; }
     protected override void OnInitialized()
     {
         SetStyles();
@@ -24,17 +25,17 @@
 
     private void SetStyles()
     {
-        Style = new CssBuilder()
-            .AddValue($"background-color: {definition.BackgroundColor};")
+        var styleBuilder = new CssBuilder()
             .AddValue($"color: {definition.IconColor};")
-            .AddValue("text-align: center;")
-            .AddValue("height: 100%;")
-            .AddValue("width: 100%;")
-            .AddValue("display: flex;")
-            .AddValue("justify-content: center;")
-            .AddValue("align-items: center;")
-            .AddValue("font-size:64px")
-            .Build();
+            .AddValue("justify-content: center;");
+
+        var fontSize = 64;
+        if (!string.IsNullOrEmpty(definition.Label))
+        {
+            fontSize = definition.Label.Length > 8? 32 :48;
+        }
+        styleBuilder.AddValue($"font-size:{fontSize}px;");
+        Style = styleBuilder.Build();
 
         IconClasses = new CssBuilder()
             .AddClass("fas")
