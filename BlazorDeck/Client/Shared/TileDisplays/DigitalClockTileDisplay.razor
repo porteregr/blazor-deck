@@ -1,0 +1,44 @@
+﻿@using BlazorDeck.Shared.ComponentModels.Displays;
+@using BlazorComponentUtilities;
+@using System.Threading;
+@implements IDisposable
+
+<ColoredTileDisplay Color="@definition.BackgroundColor">
+    <h3 style="@Style">@ClockText</h3>
+</ColoredTileDisplay>
+
+@code {
+    [Parameter]
+    public DigitalClockDisplayDefinition definition { get; set; }
+    public string Style { get; set; }
+    private Timer timer;
+    private string ClockText { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetStyles();
+        timer = new Timer(state =>
+        {
+            ClockText = DateTime.Now.ToShortTimeString();
+            InvokeAsync(StateHasChanged);
+        }, null, 0, 1000);
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetStyles();
+        base.OnParametersSet();
+    }
+
+    private void SetStyles()
+    {
+        Style = new CssBuilder()
+            .AddValue($"color: {definition.TextColor};")
+            .Build();
+    }
+
+    public void Dispose()
+    {
+        timer.Dispose();
+    }
+}

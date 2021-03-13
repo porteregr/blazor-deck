@@ -9,6 +9,7 @@ html, body {
 .main {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 .nav-container {
@@ -24,6 +25,8 @@ html, body {
     flex-direction: row;
     flex: auto;
     justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content:flex-start;
 }
 
 #blazor-error-ui {
@@ -58,8 +61,6 @@ html, body {
 }
 
 .tile {
-    width: 100px;
-    height: 100px;
     margin: 5px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     cursor: pointer;
@@ -69,7 +70,7 @@ html, body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    transition: all .3s;
+    transition: all .25s;
 }
 .tile:hover {
     transform: scale(1.03);
@@ -77,5 +78,10 @@ html, body {
 
 .tile:active {
     transform: scale(.90);
+    filter: brightness(80%);
 }
 
+.activated {
+    transform: scale(.90);
+    filter: brightness(80%);
+}

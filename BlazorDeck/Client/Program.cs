@@ -11,7 +11,7 @@ namespace BlazorDeck.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("app");
+            builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<Services.ActionRouter>();
@@ -19,7 +19,8 @@ namespace BlazorDeck.Client
             builder.Services.AddScoped<Services.ServerEventHandlers.ServerEventManager>();
             builder.Services.AddScoped<Services.ServerEventHandlers.ActiveWindowEventHandler>();
             builder.Services.AddScoped<Services.ActionRunners.NavActionRunner>();
-            builder.Services.AddTransient<Services.BlazorTimer>();
+            builder.Services.AddScoped<Services.BlazorTimer>();
+            builder.Services.AddScoped<Services.ActionRunners.NativeActionRunner>();
 
 
             await builder.Build().RunAsync();

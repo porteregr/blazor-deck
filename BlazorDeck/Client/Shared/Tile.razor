@@ -1,8 +1,9 @@
 ﻿@using Client.Services;
 @using BlazorDeck.Shared.ComponentModels.Displays;
+@using BlazorComponentUtilities;
 @inject ActionRouter actionRouter;
 
-<div class="tile" @onclick="Click">
+<div class="@Classes" style="@Style" @onclick="Click">
     @if (definition.Display is TextTileDisplayDefinition textTileDisplayDefinition)
     {
         <BlazorDeck.Client.Shared.TileDisplays.TextTileDisplay definition="textTileDisplayDefinition" />
@@ -15,15 +16,60 @@
     {
         <BlazorDeck.Client.Shared.TileDisplays.SvgTileDisplay definition="svgTileDisplayDefinition" />
     }
+    @if (definition.Display is DigitalClockDisplayDefinition digitalClockTileDisplayDefinition)
+    {
+        <BlazorDeck.Client.Shared.TileDisplays.DigitalClockTileDisplay definition="digitalClockTileDisplayDefinition" />
+    }
 </div>
 
 @using BlazorDeck.Shared.ComponentModels
 @code {
     [Parameter]
     public TileDefinition definition { get; set; }
+    [Parameter]
+    public bool activated { get; set; } = false;
+    private string Style { get; set; }
+    private string Classes { get; set; }
+    private const int baseSize = 100;
+    private const int margin = 5;
+
+    protected override void OnInitialized()
+    {
+        UpdateStyle();
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        UpdateStyle();
+        base.OnParametersSet();
+    }
+
+    private void UpdateStyle()
+    {
+        Style = new CssBuilder()
+            .AddValue($"width: {definition.Width * baseSize + ((definition.Width - 1)*(margin *2))}px;")
+            .AddValue($"height: {definition.Height * baseSize + ((definition.Height - 1) * (margin * 2))}px;")
+            .Build();
+
+        var classesBuilder = new CssBuilder()
+            .AddClass("tile");
+
+        if (activated)
+        {
+            classesBuilder.AddClass("activated");
+        }
+
+        Classes = classesBuilder.Build();
+    }
 
     private void Click()
     {
         actionRouter.RunAction(definition.Action);
+        if (definition.Togglable)
+        {
+            activated = !activated;
+        }
+        UpdateStyle();
     }
 }

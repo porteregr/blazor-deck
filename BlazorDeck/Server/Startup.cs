@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using BlazorDeck.Server.Hubs;
 using System.Linq;
 using BlazorDeck.Server.SystemControl.PrimaryMonitor;
+using SoundSwitch.Framework.Audio.Lister;
+using SoundSwitch.Audio.Manager;
 
 namespace BlazorDeck.Server
 {
@@ -36,6 +38,8 @@ namespace BlazorDeck.Server
             services.AddSingleton<ServerEventManager>();
             services.AddSingleton<ProgramRunManager>();
             services.AddSingleton<PrimaryDisplayManager>();
+            services.AddSingleton((context)=> new CachedAudioDeviceLister(NAudio.CoreAudioApi.DeviceState.Active));
+            services.AddSingleton((context) => AudioSwitcher.Instance);
             services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
@@ -60,7 +64,7 @@ namespace BlazorDeck.Server
                 app.UseHsts();
             }
             
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
