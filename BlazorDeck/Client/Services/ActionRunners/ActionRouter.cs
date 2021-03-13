@@ -1,5 +1,6 @@
 ﻿using BlazorDeck.Client.Services.ActionRunners;
 using BlazorDeck.Shared.ComponentModels;
+using BlazorDeck.Shared.ComponentModels.Actions;
 using System.Threading.Tasks;
 
 namespace BlazorDeck.Client.Services
@@ -8,10 +9,12 @@ namespace BlazorDeck.Client.Services
     {
         private readonly APIActionRunner aPIActionRunner;
         private readonly NavActionRunner navActionRunner;
-        public ActionRouter(APIActionRunner aPIActionRunner, NavActionRunner navActionRunner)
+        private readonly NativeActionRunner nativeActionRunner;
+        public ActionRouter(APIActionRunner aPIActionRunner, NavActionRunner navActionRunner, NativeActionRunner nativeActionRunner)
         {
             this.aPIActionRunner = aPIActionRunner;
             this.navActionRunner = navActionRunner;
+            this.nativeActionRunner = nativeActionRunner;
         }
 
         public Task RunAction(ITileAction action)
@@ -23,6 +26,10 @@ namespace BlazorDeck.Client.Services
             if(action is NavTileAction)
             {
                 return navActionRunner.RunAction(action);
+            }
+            if(action is NativeTileAction)
+            {
+                return nativeActionRunner.RunAction(action);
             }
             return Task.CompletedTask;
         }

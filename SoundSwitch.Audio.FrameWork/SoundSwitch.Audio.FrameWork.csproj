@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj" />
+    <ProjectReference Include="..\SoundSwitch.Common\SoundSwitch.Common.csproj" />
+  </ItemGroup>
+
+</Project>

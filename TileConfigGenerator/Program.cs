@@ -14,6 +14,8 @@ namespace TileConfigGenerator
     {
         static void Main(string[] args)
         {
+
+
             var lightGreen = "#008E00";
             var paleGreen = "#4CAF50";
             var white = "#FFFFFF";
@@ -22,8 +24,10 @@ namespace TileConfigGenerator
             var volumeUp = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_UP), new IconTileDisplayDefinition("fa-volume-up", paleGreen, white), "Volune Up", 0f);
             var volumeDown = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_DOWN), new IconTileDisplayDefinition("fa-volume-down", paleGreen, white), "Volune Down", 1f);
             var play = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.MEDIA_PLAY_PAUSE), new IconTileDisplayDefinition("fa-play", paleGreen, white), "Volune Down", 3f);
+            var outputSpeaker = new TileDefinition(new AudioOutputAction("Speakers (Realtek(R) Audio)"), new IconTileDisplayDefinition("fa-volume-up", paleGreen, white,"Speakers"), "Speakers", 4f);
+            var outputHeadphones = new TileDefinition(new AudioOutputAction("Headphones (Realtek(R) Audio)"), new IconTileDisplayDefinition("fa-headphones-alt", paleGreen, white), "Headphones", 5f);
             var navTile = new TileDefinition(new NavTileAction("Sound Page"), new IconTileDisplayDefinition("fa-volume-up", paleGreen, white, "Sound"), "Nav Tile", 1);
-            var soundTilePage = new TilePageDefinition(new List<TileDefinition> { mute, volumeDown, volumeUp, play },
+            var soundTilePage = new TilePageDefinition(new List<TileDefinition> { mute, volumeDown, volumeUp, play, outputSpeaker, outputHeadphones },
             "Sound Page", navTile, new NullServerEvent());
 
             var monitor0 = new TileDefinition(new PrimaryMonitorAction(0), new IconTileDisplayDefinition("fa-desktop", paleGreen, white, "Monitor 1"), "Monitor 1", 0f);
@@ -34,8 +38,11 @@ namespace TileConfigGenerator
             "Monitor", monitorNavTile, new NullServerEvent());
 
             var tileDefinition1 = new TileDefinition(new ProgramRunAction("VisualStudio", "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\devenv.exe"), new SvgTileDisplayDefinition("BrandVisualStudioWin2019.svg", lightGreen), "Default", 0);
+            var spotify = new TileDefinition(new ProgramRunAction("Spotify", "explorer.exe", "shell:appsFolder\\SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"), new SvgTileDisplayDefinition("Spotify_Icon_RGB_White.svg", lightGreen), "Default", 1);
+            var wol = new TileDefinition(new WOLTileAction("04-D9-F5-84-58-F2"), new IconTileDisplayDefinition("fa-power-off", lightGreen, white), "Default", 2);
+            var clock = new TileDefinition(new DumbTileAction(), new DigitalClockDisplayDefinition("12:00", lightGreen, white), "Clock", 3f,false,2,1);
             var navTile1 = new TileDefinition(new NavTileAction("Default Page"), new IconTileDisplayDefinition("fa-home", paleGreen, white), "Nav Tile", 0);
-            var defaultTilePage = new TilePageDefinition(new List<TileDefinition> { tileDefinition1 },
+            var defaultTilePage = new TilePageDefinition(new List<TileDefinition> { tileDefinition1,wol, spotify, clock },
             "Default Page", navTile1, new NullServerEvent(), true);
 
             var configJson = JsonConvert.SerializeObject(new List<TilePageDefinition> { soundTilePage, defaultTilePage, monitorTilePage},new JsonSerializerSettings() {TypeNameHandling = TypeNameHandling.Auto });

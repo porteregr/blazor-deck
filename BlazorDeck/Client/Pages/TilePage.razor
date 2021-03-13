@@ -1,13 +1,17 @@
 ﻿@using BlazorDeck.Shared.ComponentModels
-<div class="tile-container" >
+@using BlazorAnimate;
+<div class="tile-container">
+    @{int i = 0;}
     @foreach (var tile in definition.Tiles.OrderBy((tile) => tile.Priority))
     {
+    <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromMilliseconds(500)" Delay="TimeSpan.FromMilliseconds(i++ * 100)">
         <Tile definition="tile"></Tile>
+    </Animate>
     }
-</div>
+    </div>
 
-@code {
-    [Parameter]
-    public TilePageDefinition definition { get; set; }
+    @code {
+        [Parameter]
+        public TilePageDefinition definition { get; set; }
 
-}
+    }

@@ -7,13 +7,17 @@
 @using Newtonsoft.Json;
 @using BlazorDeck.Client.Services.ServerEventHandlers;
 @using BlazorDeck.Client.Services.ActionRunners;
+@using BlazorAnimate;
 
     @if (tilePageDefinitions != null)
     {
         <div class="nav-container">
+            @{int i = 0;} 
             @foreach (var tilePageDefinition in tilePageDefinitions.OrderBy((tilePageDefinition) => tilePageDefinition.NavTile.Priority))
             {
-                <Tile definition=@tilePageDefinition.NavTile></Tile>
+            <Animate Animation="Animations.FadeUp" Duration="TimeSpan.FromMilliseconds(500)" Delay="TimeSpan.FromMilliseconds(i++ * 100)">
+                <Tile definition=@tilePageDefinition.NavTile activated="tilePageDefinition == activeTilePage"></Tile>
+            </Animate>
             }
         </div>
         <TilePage definition=@activeTilePage></TilePage>

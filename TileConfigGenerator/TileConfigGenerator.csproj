@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +12,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorDeck\Shared\BlazorDeck.Shared.csproj" />
+    <ProjectReference Include="..\SoundSwitch.Audio.FrameWork\SoundSwitch.Audio.FrameWork.csproj" />
+    <ProjectReference Include="..\SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj" />
+    <ProjectReference Include="..\SoundSwitch.Common\SoundSwitch.Common.csproj" />
   </ItemGroup>
 
 </Project>
