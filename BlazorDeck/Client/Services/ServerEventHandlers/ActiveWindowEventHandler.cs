@@ -9,7 +9,7 @@ namespace BlazorDeck.Client.Services.ServerEventHandlers
     {
         private bool registeredToHub = false;
         private readonly Dictionary<string, List<ActiveWindowEvent>> registeredEvents = new Dictionary<string, List<ActiveWindowEvent>>();
-        private List<ActiveWindowEvent> activeEvents = new List<ActiveWindowEvent>();
+        private readonly List<ActiveWindowEvent> activeEvents = new List<ActiveWindowEvent>();
         public void RegisterEvent(IServerEvent serverEvent, HubConnection hubConnection)
         {
             if(serverEvent is ActiveWindowEvent activeWindowEvent)
@@ -38,13 +38,13 @@ namespace BlazorDeck.Client.Services.ServerEventHandlers
                 activeEvent.Deactivate();
             }
 
-            activeEvents = new List<ActiveWindowEvent>();
+            activeEvents.Clear();
             var programName = currentWindow.Split("-").Last().Trim();
             foreach(var events in registeredEvents.Values)
             {
                 if (currentWindow.Contains(events.First().WindowName))
                 {
-                    activeEvents = events;
+                    activeEvents.AddRange(events);
                     foreach (var activeEvent in events)
                     {
                         activeEvent.Activate();

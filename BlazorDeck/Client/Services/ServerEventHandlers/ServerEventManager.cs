@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BlazorDeck.Shared.ComponentModels;
 using Microsoft.AspNetCore.Components;
@@ -11,26 +9,29 @@ namespace BlazorDeck.Client.Services.ServerEventHandlers
     public class ServerEventManager
     {
         private readonly ActiveWindowEventHandler activeWindowEventHandler;
+        private readonly AudioDeviceEventHandler audioDeviceEventHandler;
         private readonly HubConnection hubConnection;
-        public ServerEventManager(NavigationManager navigationManager, ActiveWindowEventHandler activeWindowEventHandler)
+        public ServerEventManager(NavigationManager navigationManager, ActiveWindowEventHandler activeWindowEventHandler, AudioDeviceEventHandler audioDeviceEventHandler)
         {
             this.activeWindowEventHandler = activeWindowEventHandler;
+            this.audioDeviceEventHandler = audioDeviceEventHandler;
             hubConnection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri("/servereventhub"))
             .Build();
         }
 
-        public Task Start(IEnumerable<IServerEvent> serverEvents)
+        public async Task Start(IEnumerable<IServerEvent> serverEvents)
         {
+            await hubConnection.StartAsync();
             RegisterEventHandlers(serverEvents);
-            return hubConnection.StartAsync();
         }
 
         private void RegisterEventHandlers(IEnumerable<IServerEvent> serverEvents)
         {
             foreach(var serverEvent in serverEvents)
             {
-                  activeWindowEventHandler.RegisterEvent(serverEvent, hubConnection);
+                activeWindowEventHandler.RegisterEvent(serverEvent, hubConnection);
+                audioDeviceEventHandler.RegisterEvent(serverEvent, hubConnection);
             }
         }
     }

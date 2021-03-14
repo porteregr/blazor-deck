@@ -1,20 +1,19 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace BlazorDeck.Shared.ComponentModels
+namespace BlazorDeck.Shared.ComponentModels.ServerEvents
 {
-    public class ActiveWindowEvent : IServerEvent
+    public class AudioDeviceEvent : IServerEvent
     {
         public event EventHandler EventActive;
         public event EventHandler EventInactive;
         [JsonIgnore]
         public bool State { get; private set; } = false;
+        public string DeviceId { get; private set; }
 
-        public string WindowName { get; private set; }
-
-        public ActiveWindowEvent(string windowName)
+        public AudioDeviceEvent(string deviceId)
         {
-            WindowName = windowName;
+            DeviceId = deviceId;
         }
 
         public void Deactivate()

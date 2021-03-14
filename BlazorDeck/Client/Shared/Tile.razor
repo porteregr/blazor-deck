@@ -2,6 +2,7 @@
 @using BlazorDeck.Shared.ComponentModels.Displays;
 @using BlazorComponentUtilities;
 @inject ActionRouter actionRouter;
+@implements IDisposable;
 
 <div class="@Classes" style="@Style" @onclick="Click">
     @if (definition.Display is TextTileDisplayDefinition textTileDisplayDefinition)
@@ -27,7 +28,13 @@
     [Parameter]
     public TileDefinition definition { get; set; }
     [Parameter]
-    public bool activated { get; set; } = false;
+    public bool activated { get { return _activated; }
+        set {
+            _activated = value;
+            UpdateStyle();
+            StateHasChanged();
+        } }
+    private bool _activated = false;
     private string Style { get; set; }
     private string Classes { get; set; }
     private const int baseSize = 100;
@@ -36,12 +43,14 @@
     protected override void OnInitialized()
     {
         UpdateStyle();
+        RegisterServerEvent();
         base.OnInitialized();
     }
 
     protected override void OnParametersSet()
     {
         UpdateStyle();
+        RegisterServerEvent();
         base.OnParametersSet();
     }
 
@@ -63,6 +72,49 @@
         Classes = classesBuilder.Build();
     }
 
+    protected override Task OnParametersSetAsync()
+    {
+        UnRegisterServerEvent();
+        return base.OnParametersSetAsync();
+    }
+
+    private void RegisterServerEvent()
+    {
+        if(definition.ToggleEvent == null)
+        {
+            return;
+        }
+        activated = definition.ToggleEvent.State;
+        definition.ToggleEvent.EventActive += ServerEventActive;
+        definition.ToggleEvent.EventInactive += ServerEventInActive;
+    }
+
+    private void UnRegisterServerEvent()
+    {
+        if (definition.ToggleEvent == null)
+        {
+            return;
+        }
+        definition.ToggleEvent.EventActive -= ServerEventActive;
+        definition.ToggleEvent.EventInactive -= ServerEventInActive;
+    }
+
+    private void ServerEventActive(object sender, EventArgs e)
+    {
+        if (definition.Togglable)
+        {
+            activated = true;
+        }
+    }
+
+    private void ServerEventInActive(object sender, EventArgs e)
+    {
+        if (definition.Togglable)
+        {
+            activated = false;
+        }
+    }
+
     private void Click()
     {
         actionRouter.RunAction(definition.Action);
@@ -70,6 +122,10 @@
         {
             activated = !activated;
         }
-        UpdateStyle();
+    }
+
+    public void Dispose()
+    {
+        UnRegisterServerEvent();
     }
 }

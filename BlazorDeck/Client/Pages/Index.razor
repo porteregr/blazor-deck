@@ -15,7 +15,7 @@
             @{int i = 0;} 
             @foreach (var tilePageDefinition in tilePageDefinitions.OrderBy((tilePageDefinition) => tilePageDefinition.NavTile.Priority))
             {
-            <Animate Animation="Animations.FadeUp" Duration="TimeSpan.FromMilliseconds(500)" Delay="TimeSpan.FromMilliseconds(i++ * 100)">
+            <Animate Animation="Animations.FadeUp" Duration="TimeSpan.FromMilliseconds(250)" Delay="TimeSpan.FromMilliseconds(i++ * 50)">
                 <Tile definition=@tilePageDefinition.NavTile activated="tilePageDefinition == activeTilePage"></Tile>
             </Animate>
             }
@@ -85,6 +85,9 @@
             tilePageDefinition.NavEvent.EventInactive += (sender, arg) => SetDefaultPage();
         }
         SetDefaultPage();
-        await serverEventHandler.Start(tilePageDefinitions.Select((tilePageDefinition) => tilePageDefinition.NavEvent));
+        var serverEvents = new List<IServerEvent>();
+        serverEvents.AddRange(tilePageDefinitions.Select((tilePageDefinition) => tilePageDefinition.NavEvent));
+        serverEvents.AddRange(tilePageDefinitions.SelectMany((tilePageDefinition) => tilePageDefinition.Tiles.Where((tile) => tile.ToggleEvent != null).Select((tile) => tile.ToggleEvent)));
+        await serverEventHandler.Start(serverEvents);
     }
 }
