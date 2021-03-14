@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace BlazorDeck.Shared.ComponentModels.ServerEvents
 {
@@ -6,5 +7,7 @@ namespace BlazorDeck.Shared.ComponentModels.ServerEvents
     {
         public event EventHandler EventActive;
         public event EventHandler EventInactive;
+        [JsonIgnore]
+        public bool State { get; private set; } = false;
     }
 }
