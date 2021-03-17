@@ -34,7 +34,7 @@ namespace BlazorDeck.Server
             services.AddSingleton<VolumeControl>();
             services.AddSingleton<WindowMonitor>();
             services.AddSingleton<KeyEmulation>();
-            services.AddSingleton<TileConfigManager>();
+            services.AddSingleton<BookManager>();
             services.AddSingleton<ServerEventManager>();
             services.AddSingleton<ProgramRunManager>();
             services.AddSingleton<DefaultAudioMonitor>();
