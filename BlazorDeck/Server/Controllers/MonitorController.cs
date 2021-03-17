@@ -14,7 +14,7 @@ namespace BlazorDeck.Server.Controllers
         }
         [Route("primary")]
         [HttpPost]
-        public IActionResult KeyPessPost([FromBody]uint id)
+        public IActionResult SetPrimaryMonitor([FromBody]uint id)
         {
             primaryDisplayManager.SetAsPrimaryMonitor(id);
             return Ok();

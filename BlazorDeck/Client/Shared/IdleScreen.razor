@@ -1,0 +1,56 @@
+﻿@using System.Threading;
+@using BlazorComponentUtilities;
+@implements IDisposable
+<div style="@ContainerStyle">
+    <h2 style="@Style">@DateText</h2>
+    <h2 style="@Style">@ClockText</h2>
+</div>
+
+
+@code {
+    public string Style { get; set; }
+    public string ContainerStyle { get; set; }
+    private Timer timer;
+    private string ClockText { get; set; }
+    private string DateText { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetStyles();
+        timer = new Timer(state =>
+        {
+            DateText = DateTime.Now.ToLongDateString();
+            ClockText = DateTime.Now.ToShortTimeString();
+            InvokeAsync(StateHasChanged);
+        }, null, 0, 1000);
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetStyles();
+        base.OnParametersSet();
+    }
+
+    private void SetStyles()
+    {
+        Style = new CssBuilder()
+            .AddValue($"color: #808080;")
+            .AddValue($"flex: 1;")
+            .Build();
+
+        ContainerStyle = new CssBuilder()
+            .AddValue("width: 100%;")
+            .AddValue("height: 100%;")
+            .AddValue("text-align: center;")
+            .AddValue("align-items: center")
+            .AddValue("justify-content: center;")
+            .AddValue("display: flex;")
+            .AddClass("flex-direction: column;")
+            .Build();
+    }
+
+    public void Dispose()
+    {
+        timer.Dispose();
+    }
+}

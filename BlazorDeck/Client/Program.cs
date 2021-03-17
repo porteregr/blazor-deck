@@ -22,6 +22,7 @@ namespace BlazorDeck.Client
             builder.Services.AddScoped<Services.BlazorTimer>();
             builder.Services.AddScoped<Services.ActionRunners.NativeActionRunner>();
             builder.Services.AddScoped<Services.ServerEventHandlers.AudioDeviceEventHandler>();
+            builder.Services.AddScoped<Services.IdleManager>();
 
 
             await builder.Build().RunAsync();

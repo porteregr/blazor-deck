@@ -18,7 +18,7 @@ namespace BlazorDeck.Server.Controllers
         }
         [Route("media")]
         [HttpPost]
-        public IActionResult KeyPessPost([FromBody]string name)
+        public IActionResult SetAudioOutput([FromBody]string name)
         {
             cachedAudioDeviceLister.Refresh();
             var deviceToSelect = cachedAudioDeviceLister.PlaybackDevices.FirstOrDefault((device) => string.Equals(device.NameClean, name));
