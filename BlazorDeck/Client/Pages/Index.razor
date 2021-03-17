@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/book/{bookName}"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject ServerEventManager serverEventHandler
@@ -30,6 +30,8 @@
     }
 
 @code{
+    [Parameter]
+    public string BookName { get; set; }
     public IEnumerable<TilePageDefinition> tilePageDefinitions { get; private set; }
     public TilePageDefinition activeTilePage { get; private set; }
     private TilePageDefinition defaultPage;
@@ -38,7 +40,7 @@
     protected override async Task OnInitializedAsync()
     {
         ConfigureEvents();
-        await LoadPages();
+        await LoadBook();
         await ConfigurePages();
         idleManager.IsIdle += OnIdle;
     }
@@ -79,9 +81,9 @@
         navActionRunner.NavEvent += HandleNavEvent;
     }
 
-    private async Task LoadPages()
+    private async Task LoadBook()
     {
-        var results = await Http.GetAsync("api/TileConfig").ConfigureAwait(true);
+        var results = await Http.GetAsync($"api/books/{BookName}").ConfigureAwait(true);
         var tilepageJson = await results.Content.ReadAsStringAsync().ConfigureAwait(true);
         tilePageDefinitions = JsonConvert.DeserializeObject<IEnumerable<TilePageDefinition>>(tilepageJson, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
     }
