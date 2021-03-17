@@ -14,7 +14,7 @@ namespace BlazorDeck.Server.Controllers
         }
         [Route("")]
         [HttpPost]
-        public IActionResult KeyPessPost([FromBody]string name)
+        public IActionResult RunProgram([FromBody]string name)
         {
             programRunManager.RunProgram(name);
             

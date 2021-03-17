@@ -2,14 +2,16 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject ServerEventManager serverEventHandler
-@inject NavActionRunner navActionRunner 
+@inject NavActionRunner navActionRunner
+@inject IdleManager idleManager
 @using BlazorDeck.Shared.ComponentModels
+@using BlazorDeck.Client.Services;
 @using Newtonsoft.Json;
 @using BlazorDeck.Client.Services.ServerEventHandlers;
 @using BlazorDeck.Client.Services.ActionRunners;
 @using BlazorAnimate;
 
-    @if (tilePageDefinitions != null)
+    @if (tilePageDefinitions != null && !IsIdle)
     {
         <div class="nav-container">
             @{int i = 0;} 
@@ -22,17 +24,29 @@
         </div>
         <TilePage definition=@activeTilePage></TilePage>
     }
+    else
+    {
+        <IdleScreen></IdleScreen>
+    }
 
 @code{
     public IEnumerable<TilePageDefinition> tilePageDefinitions { get; private set; }
     public TilePageDefinition activeTilePage { get; private set; }
     private TilePageDefinition defaultPage;
+    private bool IsIdle = false;
 
     protected override async Task OnInitializedAsync()
     {
         ConfigureEvents();
         await LoadPages();
         await ConfigurePages();
+        idleManager.IsIdle += OnIdle;
+    }
+
+    private void OnIdle(object sender, EventArgs e)
+    {
+        IsIdle = true;
+        StateHasChanged();
     }
 
     private void SetActivePage(TilePageDefinition tilePageDefinition)
