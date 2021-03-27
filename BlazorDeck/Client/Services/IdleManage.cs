@@ -54,7 +54,7 @@ namespace BlazorDeck.Client.Services
 
         private void Refresh()
         {
-            navigationManager.NavigateTo(navigationManager.BaseUri, true);
+            navigationManager.NavigateTo(navigationManager.Uri, true);
         }
     }
 }

@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A79EFBA1-2235-48B2-A98E-4AA19BBE71FD}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundSwitch.Audio.Manager", "SoundSwitch.Audio.Manager\SoundSwitch.Audio.Manager.csproj", "{F1BC3093-D845-4129-9B3C-B99AC111E480}"

@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using WindowsInput.Native;
 using BlazorDeck.Shared.ComponentModels.ServerEvents;
+using SoundSwitch.Framework.Audio.Lister;
+using System;
 
 namespace TileConfigGenerator
 {
@@ -20,14 +22,22 @@ namespace TileConfigGenerator
             var paleGreen = "#4CAF50";
             var white = "#FFFFFF";
 
+            var devices = new CachedAudioDeviceLister(NAudio.CoreAudioApi.DeviceState.Active);
+            devices.Refresh();
+            foreach(var decice in devices.PlaybackDevices)
+            {
+                Console.WriteLine(decice.NameClean);
+            }
+
             var mute = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_MUTE), new IconTileDisplayDefinition("fa-volume-mute", lightGreen, white), "Mute", 2f);
             var volumeUp = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_UP), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white), "Volune Up", 0f);
             var volumeDown = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_DOWN), new IconTileDisplayDefinition("fa-volume-down", lightGreen, white), "Volune Down", 1f);
             var play = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.MEDIA_PLAY_PAUSE), new IconTileDisplayDefinition("fa-play", lightGreen, white), "Volune Down", 3f);
             var outputSpeaker = new TileDefinition(new AudioOutputAction("Speakers (Realtek(R) Audio)"), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white,"Speakers"), "Speakers", 4f, true, new AudioDeviceEvent("Speakers (Realtek(R) Audio)"));
             var outputHeadphones = new TileDefinition(new AudioOutputAction("Headphones (Realtek(R) Audio)"), new IconTileDisplayDefinition("fa-headphones-alt", lightGreen, white), "Headphones", 5f, true, new AudioDeviceEvent("Headphones (Realtek(R) Audio)"));
+            var outputTV = new TileDefinition(new AudioOutputAction("LG TV (NVIDIA High Definition Audio)"), new IconTileDisplayDefinition("fa-tv", lightGreen, white), "TV", 6f, true, new AudioDeviceEvent("LG TV (NVIDIA High Definition Audio)"));
             var navTile = new TileDefinition(new NavTileAction("Sound Page"), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white, "Sound"), "Nav Tile", 1);
-            var soundTilePage = new TilePageDefinition(new List<TileDefinition> { mute, volumeDown, volumeUp, play, outputSpeaker, outputHeadphones },
+            var soundTilePage = new TilePageDefinition(new List<TileDefinition> { mute, volumeDown, volumeUp, play, outputSpeaker, outputHeadphones, outputTV },
             "Sound Page", navTile, new NullServerEvent());
 
             var monitor0 = new TileDefinition(new PrimaryMonitorAction(0), new IconTileDisplayDefinition("fa-desktop", lightGreen, white, "Monitor 1"), "Monitor 1", 0f);
@@ -46,7 +56,7 @@ namespace TileConfigGenerator
             "Default Page", navTile1, new NullServerEvent(), true);
 
             var configJson = JsonConvert.SerializeObject(new List<TilePageDefinition> { soundTilePage, defaultTilePage, monitorTilePage},new JsonSerializerSettings() {TypeNameHandling = TypeNameHandling.Auto });
-            File.WriteAllText("C:\\Users\\porte\\Documents\\BlazorDeck\\tileConfig.json", configJson);
+            File.WriteAllText("C:\\Users\\porte\\Documents\\BlazorDeck\\book-modbro.json", configJson);
         }
     }
 }
