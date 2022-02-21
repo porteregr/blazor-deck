@@ -1,0 +1,42 @@
+﻿@page "/book/{BookName}"
+@inject ServerEventManager serverEventHandler
+@inject IdleManager idleManager
+@inject BookManager bookManager
+@using BlazorDeck.Shared.ComponentModels
+@using BlazorDeck.Client.Services;
+@using BlazorDeck.Client.Services.ServerEventHandlers;
+
+    @if (tilePageDefinitions != null && !IsIdle)
+    {
+        <Book TilePageDefinitions="tilePageDefinitions"></Book>
+    }
+    else
+    {
+        <IdleScreen></IdleScreen>
+    }
+
+@code{
+    [Parameter]
+    public string BookName { get; set; }
+    public IEnumerable<TilePageDefinition> tilePageDefinitions { get; private set; }
+    private bool IsIdle = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBook();
+        idleManager.IsIdle += OnIdle;
+    }
+
+    private void OnIdle(object sender, EventArgs e)
+    {
+        IsIdle = true;
+        StateHasChanged();
+    }
+
+    private async Task LoadBook()
+    {
+        tilePageDefinitions = await bookManager.LoadBook(BookName);
+        StateHasChanged();
+    }
+
+}

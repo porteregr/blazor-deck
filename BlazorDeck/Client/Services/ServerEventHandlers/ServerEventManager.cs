@@ -22,7 +22,10 @@ namespace BlazorDeck.Client.Services.ServerEventHandlers
 
         public async Task Start(IEnumerable<IServerEvent> serverEvents)
         {
-            await hubConnection.StartAsync();
+            if(hubConnection.State != HubConnectionState.Connected && hubConnection.State != HubConnectionState.Connecting)
+            {
+                await hubConnection.StartAsync();
+            }           
             RegisterEventHandlers(serverEvents);
         }
 

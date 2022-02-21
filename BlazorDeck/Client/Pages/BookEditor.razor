@@ -1,0 +1,109 @@
+﻿@page "/book/edit/{BookName}"
+@inject BookManager bookManager
+@inject EditBookBuilder editBookBuilder
+@inject NavActionRunner navActionRunner
+@using BlazorDeck.Shared.ComponentModels
+@using BlazorDeck.Client.Services.ActionRunners;
+@using BlazorDeck.Client.Services;
+@using BlazorComponentUtilities;
+<div style="display:flex; flex-direction:column;width:100%; height:100%">
+    <div style="@MenuBarStyle">
+        <button>Load</button>
+        <button>Save</button>
+        <button>New</button>
+    </div>
+    <div style="@MainPageStyle">
+        <div style="@EditorFormStyle">
+            <TileEditor OriginalTile="@editTile"></TileEditor>
+        </div>
+        <div style="@PreviewStyle">
+            @if (editingBook != null)
+            {
+                <Book TilePageDefinitions="editingBook"></Book>
+            }
+            else
+            {
+                <h2>Load a book or create a new one to get started.</h2>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string BookName { get; set; }
+    public TileDefinition editTile { get; set; }
+    public TilePageDefinition editTilePageDefinition { get; set; }
+    public string MenuBarStyle { get; set; }
+    public string MainPageStyle { get; set; }
+    public string EditorFormStyle { get; set; }
+    public string PreviewStyle { get; set; }
+    public IEnumerable<TilePageDefinition> editingBook { get; private set; }
+    private IEnumerable<TilePageDefinition> backingBook;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ConfigureEvents();
+        ConfigureStyles();
+        await LoadBook();
+
+    }
+
+    private void ConfigureEvents()
+    {
+        navActionRunner.NavEvent += HandleNavEvent;
+    }
+
+    private void HandleNavEvent(object sender, EventArgs args)
+    {
+        if (sender is EditTileAction navAction)
+        {
+            editTile = navAction.OriginalTile;
+            editTilePageDefinition = backingBook.FirstOrDefault((tilePageDefinition) => string.Equals(navAction.PageName, tilePageDefinition.Name));
+            StateHasChanged();
+        }
+    }
+
+    private void ConfigureStyles()
+    {
+        MenuBarStyle = new CssBuilder()
+            .AddValue("display: flex;")
+            .AddValue("flex-direction: row;")
+            .AddValue("flex:1;")
+            .AddValue("justify-content: flex-start;")
+            .Build();
+        MainPageStyle = new CssBuilder()
+            .AddValue("display: flex;")
+            .AddValue("flex-direction: row;")
+            .AddValue("flex:1;")
+            .AddValue("justify-content: flex-start;")
+            .Build();
+        EditorFormStyle = new CssBuilder()
+            .AddValue("display: flex;")
+            .AddValue("flex-direction: column;")
+            .AddValue("flex:1;")
+            .AddValue("justify-content: flex-start;")
+            .Build();
+        PreviewStyle = new CssBuilder()
+            .AddValue("display: flex;")
+            .AddValue("flex-direction: row;")
+            .AddValue("flex:1;")
+            .AddValue("justify-content: flex-start;")
+            .Build();
+    }
+
+    private async Task LoadBook()
+    {
+        if (!string.IsNullOrEmpty(BookName))
+        {
+            backingBook = await bookManager.LoadBook(BookName);
+            editingBook = BuildEditorBook(backingBook);
+        }
+        StateHasChanged();
+    }
+
+    private IEnumerable<TilePageDefinition> BuildEditorBook(IEnumerable<TilePageDefinition> book)
+    {
+        return editBookBuilder.BuildEditBook(book);
+    }
+}

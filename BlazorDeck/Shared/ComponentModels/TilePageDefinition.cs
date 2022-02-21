@@ -4,7 +4,7 @@ namespace BlazorDeck.Shared.ComponentModels
 {
     public class TilePageDefinition
     {
-        public List<TileDefinition> Tiles { get; private set; }
+        public IReadOnlyList<TileDefinition> Tiles { get; private set; }
         public string Name { get; private set; }
         public TileDefinition NavTile { get; private set; }
         public IServerEvent NavEvent { get; private set; }

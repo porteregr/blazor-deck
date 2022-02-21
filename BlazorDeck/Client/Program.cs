@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using VxFormGenerator.Settings.Plain;
 
 namespace BlazorDeck.Client
 {
@@ -23,7 +24,9 @@ namespace BlazorDeck.Client
             builder.Services.AddScoped<Services.ActionRunners.NativeActionRunner>();
             builder.Services.AddScoped<Services.ServerEventHandlers.AudioDeviceEventHandler>();
             builder.Services.AddScoped<Services.IdleManager>();
-
+            builder.Services.AddScoped<Services.BookManager>();
+            builder.Services.AddScoped<Services.EditBookBuilder>();
+            builder.Services.AddVxFormGenerator();
 
             await builder.Build().RunAsync();
         }

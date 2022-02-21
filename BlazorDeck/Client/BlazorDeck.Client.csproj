@@ -16,6 +16,8 @@
     <PackageReference Include="Photino.Blazor" Version="1.1.1" />
     <PackageReference Include="Radzen.Blazor" Version="3.1.5" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+    <PackageReference Include="VxFormGenerator.Components.Plain" Version="0.4.0" />
+    <PackageReference Include="VxFormGenerator.Core" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Shared\GenericForm\" />
     <Folder Include="wwwroot\css\fontawesome\" />
     <Folder Include="wwwroot\css\webfonts\" />
     <Folder Include="wwwroot\images\" />

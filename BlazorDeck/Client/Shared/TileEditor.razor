@@ -1,0 +1,157 @@
+﻿@using VxFormGenerator.Core
+@using BlazorDeck.Shared.ComponentModels
+@using BlazorDeck.Shared.ComponentModels.Tiles.Builders
+@using System.Reflection
+@using BlazorDeck.Shared.ComponentModels.Actions.Builders
+
+@if (tileBuilder != null && OriginalTile != null)
+{
+    <EditForm Model="@tileBuilder"
+              OnValidSubmit="HandleValidSubmit"
+              OnInvalidSubmit="HandleInValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <RenderFormElements></RenderFormElements>
+        <InputSelect @bind-Value="@selectedActionType">
+            @foreach (var actionType in actionTypes)
+                {
+                <option value="@actionType">@actionType.Name</option>
+                }
+        </InputSelect>
+        <EditForm Context="actionContext" Model="@tileActionBuilder"
+                      OnValidSubmit="HandleValidSubmit"
+                      OnInvalidSubmit="HandleInValidSubmit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <RenderFormElements></RenderFormElements>
+                <button class="btn btn-primary" type="submit">Submit</button>
+        </EditForm>
+        <InputSelect @bind-Value="@selectedDisplayType">
+            @foreach (var displayType in displayTypes)
+                {
+                <option value="@displayType">@displayType.Name</option>
+                }
+        </InputSelect>
+        @if (selectedServerType != null)
+        {
+            <InputSelect @bind-Value="@selectedServerType">
+                @foreach (var serverType in serverTypes)
+                        {
+                    <option value="@serverType">@serverType.Name</option>
+                        }
+            </InputSelect>
+        }
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+}
+
+
+@*<EditForm Model="TileAction"
+              OnValidSubmit="HandleValidSubmit"
+              OnInvalidSubmit="HandleInValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <RenderFormElements></RenderFormElements>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+
+    <EditForm Model="TileDisplay"
+              OnValidSubmit="HandleValidSubmit"
+              OnInvalidSubmit="HandleInValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <RenderFormElements></RenderFormElements>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+
+    <EditForm Model="ServerEvent"
+              OnValidSubmit="HandleValidSubmit"
+              OnInvalidSubmit="HandleInValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <RenderFormElements></RenderFormElements>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>*@
+
+@code {
+    [Parameter]
+    public TileDefinition OriginalTile { get; set; }
+    private TileDefinitionBuilder tileBuilder = null;
+    private List<TypeInfo> actionTypes;
+    private TypeInfo selectedActionType;
+    private ITileAction TileAction;
+    private ITileActionBuilder tileActionBuilder;
+    private List<TypeInfo> displayTypes;
+    private TypeInfo selectedDisplayType;
+    private ITileDisplay TileDisplay;
+    private List<TypeInfo> serverTypes;
+    private TypeInfo selectedServerType;
+    private IServerEvent ServerEvent;
+
+    protected override void OnInitialized()
+    {
+        LoadTypes();
+        ConfigureBuilders();
+    }
+
+    protected override void OnParametersSet()
+    {
+
+        ConfigureBuilders();
+    }
+
+    private void ConfigureBuilders()
+    {
+        if (OriginalTile == null)
+        {
+            return;
+        }
+        tileBuilder = new TileDefinitionBuilder(OriginalTile);
+        selectedActionType = GetTypeBuilderType(actionTypes, OriginalTile.Action.GetType());
+        tileActionBuilder = GetActionBuilder(selectedActionType, OriginalTile.Action);
+        selectedDisplayType = OriginalTile.Display.GetType().GetTypeInfo();
+        selectedServerType = OriginalTile.ToggleEvent?.GetType().GetTypeInfo();
+        StateHasChanged();
+    }
+
+    private TypeInfo GetTypeBuilderType(List<TypeInfo> typeInfos, Type typeInfo)
+    {
+        return typeInfos.Where((buildertype) => buildertype.ImplementedInterfaces.Any((implementedInterface) =>
+            implementedInterface.GenericTypeArguments.Contains(typeInfo))).FirstOrDefault();
+    }
+
+    private ITileActionBuilder GetActionBuilder(TypeInfo builderType, ITileAction tileAction)
+    {
+        var constructor = builderType.GetConstructor(new[] { tileAction.GetType() });
+        return constructor.Invoke(new[] { tileAction }) as ITileActionBuilder;
+    }
+
+    private void LoadTypes()
+    {
+        actionTypes = LoadType<ITileActionBuilder>();
+        displayTypes = LoadType<ITileDisplay>();
+        serverTypes = LoadType<IServerEvent>();
+    }
+
+    private List<TypeInfo> LoadType<T>()
+    {
+        var types = new List<TypeInfo>();
+        var baseAssembly = Assembly.GetExecutingAssembly();
+        var assemblies = baseAssembly.GetReferencedAssemblies().Where((assembly) => assembly.FullName.StartsWith("BlazorDeck"));
+        foreach (var assembly in assemblies)
+        {
+            var assemblyRef = Assembly.Load(assembly);
+            types.AddRange(assemblyRef.DefinedTypes.Where(ti => ti.ImplementedInterfaces.Contains(typeof(T))));
+        }
+        return types;
+    }
+
+    /// <summary>
+    /// Will handle the submit action of the form
+    /// </summary>
+    /// <param name="context">The model with values as entered in the form</param>
+    private void HandleValidSubmit(EditContext context)
+    {
+        // save your changes
+    }
+
+    private void HandleInValidSubmit(EditContext context)
+    {
+        // Do something
+    }
+}
