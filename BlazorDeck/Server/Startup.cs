@@ -16,6 +16,7 @@ namespace BlazorDeck.Server
 {
     public class Startup
     {
+        private const string corsPolicyName = "corsPolicy";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -46,6 +47,17 @@ namespace BlazorDeck.Server
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
                     new[] { "application/octet-stream" });
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: corsPolicyName,
+                    builder =>
+                    {
+                        builder.WithOrigins("http://0.0.0.0")
+                        .AllowAnyHeader()
+                        .WithMethods("GET", "POST")
+                        .AllowCredentials();
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,6 +82,7 @@ namespace BlazorDeck.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors(corsPolicyName);
 
             app.UseEndpoints(endpoints =>
             {

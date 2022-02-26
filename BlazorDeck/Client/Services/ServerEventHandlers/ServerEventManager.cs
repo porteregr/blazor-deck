@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BlazorDeck.Shared.ComponentModels;
 using Microsoft.AspNetCore.Components;
@@ -16,7 +17,7 @@ namespace BlazorDeck.Client.Services.ServerEventHandlers
             this.activeWindowEventHandler = activeWindowEventHandler;
             this.audioDeviceEventHandler = audioDeviceEventHandler;
             hubConnection = new HubConnectionBuilder()
-            .WithUrl(navigationManager.ToAbsoluteUri("/servereventhub"))
+            .WithUrl(navigationManager.BaseUri.EndsWith("0.0.0.0/") ? new Uri("https://modbro.porteregr.com/servereventhub") : navigationManager.ToAbsoluteUri("/servereventhub"))
             .Build();
         }
 
