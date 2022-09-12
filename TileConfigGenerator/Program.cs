@@ -38,8 +38,8 @@ namespace TileConfigGenerator
             var volumeUp = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_UP), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white), "Volune Up", 0);
             var volumeDown = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.VOLUME_DOWN), new IconTileDisplayDefinition("fa-volume-down", lightGreen, white), "Volune Down", 1);
             var play = new TileDefinition(new APITileAction("api/keyboard/press", HttpMethod.Post, VirtualKeyCode.MEDIA_PLAY_PAUSE), new IconTileDisplayDefinition("fa-play", lightGreen, white), "Volune Down", 3);
-            var outputSpeaker = new TileDefinition(new AudioOutputAction("Speakers (Realtek(R) Audio)"), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white,"Speakers"), "Speakers", 4, true, new AudioDeviceEvent("Speakers (Realtek(R) Audio)"));
-            var outputHeadphones = new TileDefinition(new AudioOutputAction("Headphones (Realtek(R) Audio)"), new IconTileDisplayDefinition("fa-headphones-alt", lightGreen, white), "Headphones", 5, true, new AudioDeviceEvent("Headphones (Realtek(R) Audio)"));
+            var outputSpeaker = new TileDefinition(new AudioOutputAction("Speakers (High Definition Audio Device)"), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white,"Speakers"), "Speakers", 4, true, new AudioDeviceEvent("Speakers (High Definition Audio Device)"));
+            var outputHeadphones = new TileDefinition(new AudioOutputAction("Speakers (Avantree Leaf)"), new IconTileDisplayDefinition("fa-headphones-alt", lightGreen, white), "Headphones", 5, true, new AudioDeviceEvent("Speakers (Avantree Leaf)"));
             var outputTV = new TileDefinition(new AudioOutputAction("LG TV (NVIDIA High Definition Audio)"), new IconTileDisplayDefinition("fa-tv", lightGreen, white), "TV", 6, true, new AudioDeviceEvent("LG TV (NVIDIA High Definition Audio)"));
             var navTile = new TileDefinition(new NavTileAction("Sound Page"), new IconTileDisplayDefinition("fa-volume-up", lightGreen, white, "Sound"), "Nav Tile", 1);
             var soundTilePage = new TilePageDefinition(new List<TileDefinition> { mute, volumeDown, volumeUp, play, outputSpeaker, outputHeadphones, outputTV },
@@ -48,13 +48,13 @@ namespace TileConfigGenerator
             ConfigureBuilders(mute);
 
             var monitor0 = new TileDefinition(new PrimaryMonitorAction(0), new IconTileDisplayDefinition("fa-desktop", lightGreen, white, "Monitor 1"), "Monitor 1", 0);
-            var monitor1 = new TileDefinition(new PrimaryMonitorAction(2), new IconTileDisplayDefinition("fa-desktop", lightGreen, white, "Monitor 3"), "Monitor 3", 2);
-            var monitor2 = new TileDefinition(new PrimaryMonitorAction(1), new IconTileDisplayDefinition("fa-desktop", lightGreen, white, "Monitor 2"), "Monitor 2", 3);
+            var monitor1 = new TileDefinition(new PrimaryMonitorAction(1), new IconTileDisplayDefinition("fa-desktop", lightGreen, white, "Monitor 2"), "Monitor 2", 2);
+            var monitor2 = new TileDefinition(new PrimaryMonitorAction(2), new IconTileDisplayDefinition("fa-desktop", lightGreen, white, "Monitor 3"), "Monitor 3", 3);
             var monitorNavTile = new TileDefinition(new NavTileAction("Monitor"), new IconTileDisplayDefinition("fa-desktop", lightGreen, white), "Nav Tile", 2);
             var monitorTilePage = new TilePageDefinition(new List<TileDefinition> { monitor0, monitor1, monitor2 },
             "Monitor", monitorNavTile, new NullServerEvent());
 
-            var tileDefinition1 = new TileDefinition(new ProgramRunAction("VisualStudio", "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\devenv.exe"), new SvgTileDisplayDefinition("BrandVisualStudioWin2019.svg", lightGreen), "Default", 0);
+            var tileDefinition1 = new TileDefinition(new ProgramRunAction("VisualStudio", "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe"), new SvgTileDisplayDefinition("BrandVisualStudioWin2019.svg", lightGreen), "Default", 0);
             var spotify = new TileDefinition(new ProgramRunAction("Spotify", "explorer.exe", "shell:appsFolder\\SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"), new SvgTileDisplayDefinition("Spotify_Icon_RGB_White.svg", lightGreen), "Default", 1);
             var wol = new TileDefinition(new WOLTileAction("04-D9-F5-84-58-F2"), new IconTileDisplayDefinition("fa-power-off", lightGreen, white), "Default", 2);
             var clock = new TileDefinition(new DumbTileAction(), new DigitalClockDisplayDefinition("12:00", lightGreen, white), "Clock", 3,false, null, 2,1);
