@@ -18,5 +18,31 @@ namespace BlazorDeck.Shared.ComponentModels
             NavEvent = navEvent;
             DefaultPage = defaultPage;
         }
+
+        public TilePageDefinition Add(TileDefinition newTile)
+        {
+            var tiles = new List<TileDefinition>(Tiles)
+            {
+                newTile
+            };
+            return new TilePageDefinition(tiles, Name, NavTile, NavEvent, DefaultPage);
+        }
+
+        public TilePageDefinition Remove(TileDefinition tileToRemove)
+        {
+            var tiles = new List<TileDefinition>(Tiles);
+            tiles.Remove(tileToRemove);
+            return new TilePageDefinition(tiles, Name, NavTile, NavEvent, DefaultPage);
+        }
+
+        public TilePageDefinition Replace(TileDefinition orginalTile, TileDefinition newTile)
+        {
+            var tiles = new List<TileDefinition>(Tiles)
+            {
+                newTile
+            };
+            tiles.Remove(orginalTile);
+            return new TilePageDefinition(tiles, Name, NavTile, NavEvent, DefaultPage);
+        }
     }
 }

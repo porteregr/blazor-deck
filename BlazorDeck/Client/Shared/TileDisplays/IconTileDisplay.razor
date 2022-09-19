@@ -32,7 +32,7 @@
         var fontSize = 64;
         if (!string.IsNullOrEmpty(definition.Label))
         {
-            fontSize = definition.Label.Length > 8? 32 :48;
+            fontSize = definition.Label.Length > 7? 28 :48;
         }
         styleBuilder.AddValue($"font-size:{fontSize}px;");
         Style = styleBuilder.Build();
