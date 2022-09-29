@@ -1,9 +1,13 @@
-﻿@using BlazorDeck.Shared.ComponentModels.Displays.Builders
+﻿@using BlazorDeck.Shared.BaseClasses
+@using BlazorDeck.Shared.ComponentModels.Displays.Builders
+@using BlazorDeck.Shared.ComponentModels.ServerEvents
+@using BlazorDeck.Shared.ComponentModels.ServerEvents.Builders
 @using VxFormGenerator.Core
 @using BlazorDeck.Shared.ComponentModels
 @using BlazorDeck.Shared.ComponentModels.Tiles.Builders
 @using System.Reflection
 @using BlazorDeck.Shared.ComponentModels.Actions.Builders
+@using BlazorDeck.Client.Shared.CustomFormComponents
 
 @if (tileBuilder != null && OriginalTile != null)
 {
@@ -12,12 +16,7 @@
               OnInvalidSubmit="HandleInValidSubmit">
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <RenderFormElements></RenderFormElements>
-        <InputSelect @bind-Value="@selectedActionType" @onchange="@SelectedActionChanged">
-            @foreach (var actionType in actionTypes)
-                {
-                <option value="@actionType">@actionType.Name</option>
-                }
-        </InputSelect>
+        <GenericSelect @bind-Selected="@SelectedActionType" Values="actionTypes"/>
         @if (tileActionBuilder != null)
         {
             <EditForm Context="actionContext" Model="@tileActionBuilder"
@@ -25,37 +24,40 @@
                       OnInvalidSubmit="HandleInValidSubmit">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <RenderFormElements></RenderFormElements>
-                <button class="btn btn-primary" type="submit">Submit</button>
             </EditForm>
         }
-        <InputSelect @bind-Value="@selectedDisplayType">
-            @foreach (var displayType in displayTypes)
-                {
-                <option value="@displayType">@displayType.Name</option>
-                }
-        </InputSelect>
-        <EditForm Context="displayContext" Model="@tileDisplayBuilder"
+        <GenericSelect @bind-Selected="@SelectedDisplayType" Values="displayTypes"/>
+        @if (tileDisplayBuilder != null){
+            <EditForm Context="displayContext" Model="@tileDisplayBuilder"
               OnValidSubmit="HandleValidSubmit"
               OnInvalidSubmit="HandleInValidSubmit">
-            <DataAnnotationsValidator></DataAnnotationsValidator>
-            <RenderFormElements></RenderFormElements>
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </EditForm>
-        @if (selectedServerType != null)
-        {
-            <InputSelect @bind-Value="@selectedServerType">
-                @foreach (var serverType in serverTypes)
-                        {
-                    <option value="@serverType">@serverType.Name</option>
-                        }
-            </InputSelect>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <RenderFormElements></RenderFormElements>
+            </EditForm>
         }
-        <button class="btn btn-primary" type="submit">Submit</button>
+
+        @if (tileBuilder.Togglable)
+        {
+            <GenericSelect @bind-Selected="@SelectedServerType" Values="serverTypes" />
+            @if (serverEventBuilder != null)
+            {
+                <EditForm Context="serverContext" Model="@serverEventBuilder"
+              OnValidSubmit="HandleValidSubmit"
+              OnInvalidSubmit="HandleInValidSubmit">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <RenderFormElements></RenderFormElements>
+                </EditForm>
+            }
+        }
+        <button class="btn btn-primary" type="submit">Update</button>
     </EditForm>
+    @if (NewTile != null){
+        <Tile definition="NewTile"/>
+    }
 }
 
 @code {
-    // TODO: Add Builders for the other tile objects
+    // TODO: 
     // Add new tile support to create the ouput tile
     // Determine if a publish system is needed for the new tile
     // Add at tile preview that uses the builder output with out needing to press submit?
@@ -64,72 +66,58 @@
     [Parameter]
     public TileDefinition NewTile { get; set; }
     private TileDefinitionBuilder tileBuilder = null;
+
     // Action
     private List<TypeSelection> actionTypes;
     private TypeSelection selectedActionType;
-    private ITileAction TileAction;
+    private TypeSelection SelectedActionType { 
+        get => selectedActionType; 
+        set {
+            selectedActionType = value;
+            tileActionBuilder = GetNewOrOriginalTilePropertyBuilder<ITileActionBuilder, ITileAction>(value, OriginalTile.Action);
+        }
+    }
     private ITileActionBuilder tileActionBuilder;
+
     // Display
     private List<TypeSelection> displayTypes;
     private TypeSelection selectedDisplayType;
+    private TypeSelection SelectedDisplayType { 
+        get => selectedDisplayType;
+        set {
+            selectedDisplayType = value;
+            tileDisplayBuilder = GetNewOrOriginalTilePropertyBuilder<ITileDisplayBuilder, ITileDisplay>(value, OriginalTile.Display);
+        }
+    }
     private ITileDisplayBuilder tileDisplayBuilder;
-    private ITileDisplay TileDisplay;
+
     // Server Event
     private List<TypeSelection> serverTypes;
     private TypeSelection selectedServerType;
-    private IServerEvent ServerEvent;
+    private TypeSelection SelectedServerType { 
+        get => selectedServerType;
+        set {
+            selectedServerType = value;
+            serverEventBuilder = GetNewOrOriginalTilePropertyBuilder<IServerEventBuilder, IServerEvent>(value, OriginalTile.ToggleEvent ?? new NullServerEvent());
+        }
+    }
+    private IServerEventBuilder serverEventBuilder;
 
     protected override void OnInitialized()
     {
         LoadTypes();
-        ConfigureBuilders();
     }
 
     protected override void OnParametersSet()
     {
-
         ConfigureBuilders();
-    }
-
-    private void ConfigureBuilders()
-    {
-        if (OriginalTile == null)
-        {
-            return;
-        }
-        tileBuilder = new TileDefinitionBuilder(OriginalTile);
-        selectedActionType = GetTypeBuilderType(actionTypes, OriginalTile.Action.GetType());
-        tileActionBuilder = GetActionBuilder(selectedActionType, OriginalTile.Action);
-        selectedDisplayType = GetTypeBuilderType(displayTypes, OriginalTile.Display.GetType());
-        tileDisplayBuilder = GetDisplayBuilder(selectedDisplayType, OriginalTile.Display);
-        // same here
-        selectedServerType = OriginalTile.ToggleEvent != null ? new TypeSelection(OriginalTile.ToggleEvent?.GetType().GetTypeInfo()): null;
-        StateHasChanged();
-    }
-
-    private TypeSelection GetTypeBuilderType(List<TypeSelection> typeInfos, Type typeInfo)
-    {
-        return typeInfos.Where((buildertype) => buildertype.TypeInfo.ImplementedInterfaces.Any((implementedInterface) =>
-            implementedInterface.GenericTypeArguments.Contains(typeInfo))).FirstOrDefault();
-    }
-
-    private ITileActionBuilder GetActionBuilder(TypeSelection builderType, ITileAction tileAction)
-    {
-        var constructor = builderType.TypeInfo.GetConstructor(tileAction != null ? new[] { tileAction.GetType() }: new Type[0]);
-        return constructor.Invoke(tileAction != null ? new[] { tileAction } : new Type[0]) as ITileActionBuilder;
-    }
-
-    private ITileDisplayBuilder GetDisplayBuilder(TypeSelection builderType, ITileDisplay tileDisplay)
-    {
-        var constructor = builderType.TypeInfo.GetConstructor(new[] { tileDisplay.GetType() });
-        return constructor.Invoke(new[] { tileDisplay }) as ITileDisplayBuilder;
     }
 
     private void LoadTypes()
     {
         actionTypes = LoadType<ITileActionBuilder>();
         displayTypes = LoadType<ITileDisplayBuilder>();
-        serverTypes = LoadType<IServerEvent>();
+        serverTypes = LoadType<IServerEventBuilder>();
     }
 
     private List<TypeSelection> LoadType<T>()
@@ -140,42 +128,60 @@
         foreach (var assembly in assemblies)
         {
             var assemblyRef = Assembly.Load(assembly);
-            types.AddRange(assemblyRef.DefinedTypes.Where(ti => ti.ImplementedInterfaces.Contains(typeof(T))).Select((typeInfo) => new TypeSelection(typeInfo)));
+            types.AddRange(assemblyRef.DefinedTypes.Where(ti => ti.ImplementedInterfaces.Contains(typeof(T))).Select((typeInfo) =>
+            {
+                var builderInterface = typeInfo.ImplementedInterfaces?.FirstOrDefault(implmented => implmented.Name.Contains("IBuilderFor")).GetGenericArguments()[0];
+                return builderInterface == null ? null : new TypeSelection(typeInfo, builderInterface);
+            }).Where(typeSelection => typeSelection != null));
         }
         return types;
     }
 
-    private void SelectedActionChanged(ChangeEventArgs changeEventArgs){
-        if(changeEventArgs.Value == null){
+    private void ConfigureBuilders()
+    {
+        if (OriginalTile == null)
+        {
             return;
         }
-        var selected = changeEventArgs.Value as TypeSelection;
-        ITileAction tileAction = null; 
-        if(selected.TypeInfo == OriginalTile.Action.GetType()){
-            tileAction = OriginalTile.Action;
+        tileBuilder = new TileDefinitionBuilder(OriginalTile);
+        SelectedActionType = GetTypeBuilderType(actionTypes, OriginalTile.Action.GetType());
+        SelectedDisplayType = GetTypeBuilderType(displayTypes, OriginalTile.Display.GetType());
+        SelectedServerType = OriginalTile.ToggleEvent != null ? GetTypeBuilderType(serverTypes, OriginalTile.ToggleEvent.GetType())
+            : GetTypeBuilderType(serverTypes, typeof(NullServerEvent));
+        StateHasChanged();
+    }
+
+    private TypeSelection GetTypeBuilderType(List<TypeSelection> typeInfos, Type typeInfo)
+    {
+        return typeInfos.Where((buildertype) => buildertype.TypeInfo.ImplementedInterfaces.Any((implementedInterface) =>
+            implementedInterface.GenericTypeArguments.Contains(typeInfo))).FirstOrDefault();
+    }
+
+    private TTileBuilder GetNewOrOriginalTilePropertyBuilder<TTileBuilder, TTileProperty>(TypeSelection selected, TTileProperty orginalTileProperty) where TTileBuilder: class{
+        TTileProperty tileAction = default(TTileProperty); 
+        if (selected.BuilderFor == orginalTileProperty.GetType())
+        {
+            tileAction = orginalTileProperty;
         }
-        tileActionBuilder = GetActionBuilder(selected, tileAction);
+        return GetBuilder<TTileBuilder, TTileProperty>(selected, tileAction);
+    }
+
+    private TBuilder GetBuilder<TBuilder, TTileProperty>(TypeSelection builderType, TTileProperty tileProperty) where TBuilder : class
+    {
+        var constructor = builderType.TypeInfo.GetConstructor(tileProperty != null ? new[] { tileProperty.GetType() } : new Type[0]);
+        return constructor.Invoke(tileProperty != null ? new object[] { tileProperty } : new object[0]) as TBuilder;
     }
 
     private void HandleValidSubmit(EditContext context)
     {
         // This can be replaced one the display and event builders are in place
-        //NewTile = tileBuilder.BuildTileDefinition(tileActionBuilder.BuildTileAction(),
-        //selectedDisplayType.GetConstructor(new Type[])?.Invoke(),);
+        NewTile = tileBuilder.BuildTileDefinition(tileActionBuilder.BuildTileAction(),
+        tileDisplayBuilder.BuildTileDisplay(), serverEventBuilder?.BuildServerEvent());
 
     }
 
     private void HandleInValidSubmit(EditContext context)
     {
         // Do something
-    }
-
-    private class TypeSelection{
-        public string Name { get; }
-        public TypeInfo TypeInfo { get; }
-        public TypeSelection(TypeInfo typeInfo){
-            Name = typeInfo.Name;
-            TypeInfo = typeInfo;
-        }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BlazorDeck.Shared.ComponentModels
 {
-    public interface ITileDisplay
+    public interface ITileDisplay: ITileProperty
     {
     }
 }

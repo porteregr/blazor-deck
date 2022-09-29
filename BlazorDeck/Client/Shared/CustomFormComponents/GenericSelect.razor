@@ -1,0 +1,42 @@
+﻿@using System.Linq.Expressions;
+@using BlazorDeck.Shared.BaseClasses;
+@typeparam TValue;
+
+<div class="form-control-wrapper">
+    <InputSelect TValue="String" @bind-Value="@SelectedValue">
+        @foreach (var values in keyToValues)
+        {
+            <option value="@values.Key">@values.Key</option>
+        }
+    </InputSelect>
+</div>
+
+@code {
+    [CascadingParameter] private EditContext? CascadedEditContext { get; set; }
+    [Parameter] public IEnumerable<TValue> Values { get; set; }
+    [Parameter] public TValue Selected { get => selected; set {
+            selected = value;
+            StateHasChanged();
+        }}
+    [Parameter] public EventCallback<TValue> SelectedChanged { get; set; }
+    private TValue selected;
+    private Dictionary<string, TValue> keyToValues;
+    private string SelectedValue { 
+        get 
+        {
+            return (selected as Named).Name;
+        }
+        set
+        {
+            selected = keyToValues[value];
+            SelectedChanged.InvokeAsync(Selected);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        keyToValues = Values.ToDictionary(value => (value as Named).Name, value => value);
+        Selected = Values.First();
+        base.OnInitialized();
+    }
+}

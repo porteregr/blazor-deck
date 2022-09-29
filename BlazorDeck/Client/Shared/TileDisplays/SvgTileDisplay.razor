@@ -29,6 +29,8 @@
     {
         TextStyle = new CssBuilder()
             .AddValue($"color: {definition.LabelColor};")
+            .AddClass("path")
+            .AddValue($"fill: {definition.LabelColor}")
             .Build();
 
         var imageStyleBuilder = new CssBuilder()
